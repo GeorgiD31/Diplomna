@@ -9,21 +9,11 @@ class Category extends Model
 {
     use HasFactory;
 
-    public function preferences()
-    {
-        return $this->hasMany(Preference::class);
-    }
-
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'preferences')
-                    ->withPivot('political_bias')
-                    ->withTimestamps();
-    }
+    protected $fillable = ['name'];
 
     public function articles()
     {
-        return $this->hasMany(Article::class);
+        return $this->belongsToMany(Article::class, 'article_category')
+                    ->withTimestamps();
     }
 }
-

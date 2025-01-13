@@ -10,10 +10,12 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    
     protected $fillable = [
         'name',
         'email',
         'password',
+        'preferences', 
     ];
 
     protected $hidden = [
@@ -21,25 +23,21 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'preferences' => 'array', 
+    ];
 
-    public function preferences()
+    public function getCategoriesByNameAttribute()
     {
-        return $this->hasMany(Preference::class);
+        $categoryNames = $this->preferences['categories'] ?? [];
+        return Category::whereIn('name', $categoryNames)->get();
     }
 
     
-    public function categories()
+    public function articles()
     {
-        return $this->belongsToMany(Category::class, 'preferences')
-                    ->withPivot('political_bias')
-                    ->withTimestamps();
+        return $this->hasMany(Article::class);
     }
 }

@@ -11,40 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_preferences', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('preference_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
-        });
-
-        Schema::create('user_articles', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('article_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
-        });
-
-        Schema::create('article_categories', function (Blueprint $table) {
+        // Pivot table for articles and categories (many-to-many)
+        Schema::create('article_category', function (Blueprint $table) {
             $table->id();
             $table->foreignId('article_id')->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
 
-        Schema::create('preference_categories', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('preference_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
-        });
-        Schema::create('articles_preferences', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('article_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('preference_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
-        });
-        
+
     }
 
     /**
@@ -52,11 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_preferences');
-        Schema::dropIfExists('user_articles');
-        Schema::dropIfExists('article_categories');
-        Schema::dropIfExists('preference_categories');
-        Schema::dropIfExists('article_preferences');
-
+        Schema::dropIfExists('article_category');
     }
 };

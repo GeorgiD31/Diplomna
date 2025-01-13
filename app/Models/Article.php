@@ -9,16 +9,16 @@ class Article extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'content',
-        'author',
-        'published_at',
-        'category_id',
-    ];
+    protected $fillable = ['title', 'body', 'user_id'];
 
-    public function category()
+    public function user()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'article_category')
+                    ->withTimestamps();
     }
 }
