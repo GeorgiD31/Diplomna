@@ -1,25 +1,21 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('home');
+    return redirect()->route('register');
 });
 
 
-Route::get('/jobs', function () {
-    return view('jobs', ['jobs' => [
-        ['title' =>'Director',
-        'salary' => '50000'],
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-        ['title' => 'Professor',
-         'salary' => '100000'
-        ]
-
-
-    ]]);});
-
-
-Route::get('/contact', function () {
-    return view('contact');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+require __DIR__.'/auth.php';
