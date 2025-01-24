@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Article;
 
 Route::get('/', function () {
-    return redirect()->route('register');
+    return view('welcome');
 });
-
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -17,5 +17,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
+Route::get('/', function () {
+    $articles = Article::latest()->take(10)->get();
+    return view('welcome', compact('articles'));
+});
 require __DIR__.'/auth.php';

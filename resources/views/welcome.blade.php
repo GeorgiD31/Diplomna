@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Laravel</title>
+
+        
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+        
+        <style>
+            body {
+                font-family: 'Figtree', sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f9fafb;
+                color: #111827;
+            }
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            .header a {
+                text-decoration: none;
+                color: #2563eb;
+                padding: 8px 12px;
+                border: 1px solid #2563eb;
+                border-radius: 5px;
+                transition: 0.3s;
+            }
+            .header a:hover {
+                background-color: #2563eb;
+                color: #fff;
+            }
+            .article {
+                border-bottom: 1px solid #e5e7eb;
+                padding: 10px 0;
+            }
+            .article h2 {
+                font-size: 1.25rem;
+                margin: 0;
+            }
+            .article p {
+                margin: 5px 0;
+                color: #6b7280;
+            }
+            .article a {
+                text-decoration: none;
+                color: #2563eb;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            
+            <div class="header">
+                @if (Route::has('login'))
+                    @auth
+                        <a href="{{ url('/dashboard') }}">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}">Log in</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}">Register</a>
+                        @endif
+                    @endauth
+                @endif
+            </div>
+
+            
+            <div>
+                <h1>Latest Articles</h1>
+
+                @if ($articles->count())
+                    @foreach ($articles as $article)
+                        <div class="article">
+                            <h2>{{ $article->title }}</h2>
+                            <p>{{ $article->description }}</p>
+                            <a href="{{ $article->url }}" target="_blank">Read more</a>
+                        </div>
+                    @endforeach
+                @else
+                    <p>No articles available.</p>
+                @endif
+            </div>
+        </div>
+    </body>
+</html>
