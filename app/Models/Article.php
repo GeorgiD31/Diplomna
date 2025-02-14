@@ -9,7 +9,17 @@ class Article extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'body', 'user_id'];
+    protected $fillable = [
+        'title',
+        'author',
+        'description',
+        'content',
+        'url',
+        'url_to_image',
+        'source_name',
+        'published_at',
+        'user_id',
+    ];
 
     public function user()
     {
