@@ -85,6 +85,9 @@
                     @foreach ($articles as $article)
                         <div class="article">
                             <h2>{{ $article->title }}</h2>
+                            @if($article->url_to_image)
+                                <img src="{{ $article->url_to_image }}" alt="{{ $article->title }}" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+                            @endif
                             <p>{{ $article->description }}</p>
                             <a href="{{ $article->url }}" target="_blank">Read more</a>
                         </div>

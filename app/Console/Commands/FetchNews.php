@@ -25,22 +25,19 @@ class FetchNews extends Command
             $articles = $response->json()['articles'];
 
             foreach ($articles as $news) {
-
-    Article::updateOrCreate(
-        ['title' => $news['title']],
-        [
-            'author' => $news['author'] ?? 'Unknown',
-            'description' => $news['description'] ?? 'No description available',
-            'content' => $news['content'] ?? 'No content available',
-            'url' => $news['url'] ?? '',
-            'url_to_image' => $news['urlToImage'] ?? '',
-            'source_name' => $news['source']['name'] ?? 'Unknown',
-            'published_at' => $news['publishedAt'] ?? now(),
-            'user_id' => null,
-        ]
-    );
-
-
+                Article::updateOrCreate(
+                    ['title' => $news['title']],
+                    [
+                        'author' => $news['author'],
+                        'description' => $news['description'],
+                        'content' => $news['content'],
+                        'url' => $news['url'],
+                        'url_to_image' => $news['urlToImage'],
+                        'source_name' => $news['source']['name'] ?? 'Unknown',
+                        'published_at' => $news['publishedAt'],
+                        'user_id' => null,
+                    ]
+                );
             }
 
             $this->info('News fetched and saved successfully!');
@@ -49,4 +46,3 @@ class FetchNews extends Command
         }
     }
 }
-
