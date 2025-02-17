@@ -2,33 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreArticleRequest;
 use App\Models\Article;
 
 class ArticleController extends Controller
 {
-   
     public function create()
     {
         return view('articles.create');
     }
 
-    
-    public function store(Request $request)
+    public function store(StoreArticleRequest $request)
     {
-        $validated = $request->validate([
-            'title'        => 'required|string|max:255|unique:articles,title',
-            'author'       => 'nullable|string|max:255',
-            'description'  => 'required|string',
-            'content'      => 'nullable|string',
-            'url'          => 'nullable|url',
-            'url_to_image' => 'nullable|url',
-            'source_name'  => 'nullable|string|max:255',
-            'published_at' => 'nullable|date',
-        ]);
+        
+        $data = $request->validated();
+        $data['author'] = auth()->user()->name;
+        $data['user_id'] = auth()->id();
 
-        Article::create($validated);
+        Article::create($data);
 
         return redirect('/')->with('success', 'Article created successfully.');
     }
 }
+
+
