@@ -14,15 +14,17 @@ class ArticleController extends Controller
 
     public function store(StoreArticleRequest $request)
     {
-        
         $data = $request->validated();
         $data['author'] = auth()->user()->name;
         $data['user_id'] = auth()->id();
-
         Article::create($data);
 
         return redirect('/')->with('success', 'Article created successfully.');
     }
+
+    
+    public function show(Article $article)
+    {
+        return view('articles.show', compact('article'));
+    }
 }
-
-
