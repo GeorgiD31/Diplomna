@@ -6,11 +6,9 @@
 
         <title>Laravel</title>
 
-        
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        
         <style>
             body {
                 font-family: 'Figtree', sans-serif;
@@ -42,6 +40,19 @@
                 background-color: #2563eb;
                 color: #fff;
             }
+            .category-links {
+                margin-bottom: 20px;
+            }
+            .category-links a {
+                margin-right: 10px;
+                text-decoration: none;
+                color: #2563eb;
+                font-weight: bold;
+                transition: color 0.3s;
+            }
+            .category-links a:hover {
+                color: #1e40af;
+            }
             .article {
                 border-bottom: 1px solid #e5e7eb;
                 padding: 10px 0;
@@ -63,7 +74,6 @@
     </head>
     <body>
         <div class="container">
-            
             <div class="header">
                 @if (Route::has('login'))
                     @auth
@@ -77,7 +87,13 @@
                 @endif
             </div>
 
-            
+           
+            <div class="category-links">
+                @foreach(['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'] as $cat)
+                    <a href="/?category={{ $cat }}">{{ ucfirst($cat) }}</a>
+                @endforeach
+            </div>
+
             <div>
                 <h1>Latest Articles</h1>
 
