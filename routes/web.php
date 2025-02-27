@@ -30,6 +30,16 @@ Route::get('/dashboard', function () {
     return view('dashboard', compact('myArticles'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/dashboard/articles', function () {
+    $myArticles = Article::where('user_id', auth()->id())->latest()->get();
+    return response()->json(['articles' => $myArticles]);
+})->middleware(['auth', 'verified'])->name('dashboard.articles');
+
+Route::get('/dashboard/saved', function () {
+    $savedArticles = Auth::user()->savedArticles()->latest()->get();
+    return response()->json(['articles' => $savedArticles]);
+})->middleware(['auth', 'verified'])->name('dashboard.saved');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
