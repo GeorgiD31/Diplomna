@@ -6,23 +6,22 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SavedArticleController;
 
 Route::get('/', function (Request $request) {
     $categoryName = $request->input('category'); 
-    
+
     if ($categoryName) {
         $category = Category::where('name', $categoryName)->first();
         if ($category) {
-
             $articles = $category->articles()->latest()->take(10)->get();
         } else {
             $articles = Article::latest()->take(10)->get();
         }
     } else {
-        
         $articles = Article::latest()->take(10)->get();
     }
-    
+
     return view('welcome', compact('articles'));
 })->name('home');
 
@@ -39,6 +38,14 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
-Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
-Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit'); 
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update'); 
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy'); 
+
+    Route::post('/articles/{article}/save', [SavedArticleController::class, 'store'])->name('articles.save');
+    Route::delete('/articles/{article}/unsave', [SavedArticleController::class, 'destroy'])->name('articles.unsave');
+});

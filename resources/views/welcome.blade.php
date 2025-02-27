@@ -65,12 +65,21 @@
                 margin: 5px 0;
                 color: #6b7280;
             }
-            .article a {
+            .article a, .article button {
                 text-decoration: none;
                 color: #2563eb;
                 font-weight: bold;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 0;
+                transition: color 0.3s;
+            }
+            .article a:hover, .article button:hover {
+                color: #1e40af;
             }
         </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
         <div class="container">
@@ -87,7 +96,6 @@
                 @endif
             </div>
 
-           
             <div class="category-links">
                 @foreach(['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'] as $cat)
                     <a href="/?category={{ $cat }}">{{ ucfirst($cat) }}</a>
@@ -99,13 +107,27 @@
 
                 @if ($articles->count())
                     @foreach ($articles as $article)
-                        <div class="article">
+                        <div class="article" id="article-{{ $article->id }}">
                             <h2>{{ $article->title }}</h2>
                             @if($article->url_to_image)
                                 <img src="{{ $article->url_to_image }}" alt="{{ $article->title }}" style="max-width: 100%; height: auto; margin-bottom: 10px;">
                             @endif
                             <p>{{ $article->description }}</p>
                             <a href="{{ $article->url }}" target="_blank">Read more</a>
+                            @auth
+                                @if(Auth::user()->savedArticles->contains($article->id))
+                                    <form action="{{ route('articles.unsave', $article->id) }}" method="POST" class="save-form" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit">Unsave</button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('articles.save', $article->id) }}" method="POST" class="save-form" style="display:inline;">
+                                        @csrf
+                                        <button type="submit">Save</button>
+                                    </form>
+                                @endif
+                            @endauth
                         </div>
                     @endforeach
                 @else
@@ -113,5 +135,37 @@
                 @endif
             </div>
         </div>
+
+        <script>
+            $(document).ready(function() {
+                $('.save-form').on('submit', function(e) {
+                    e.preventDefault();
+
+                    var form = $(this);
+                    var url = form.attr('action');
+                    var method = form.find('input[name="_method"]').val() || 'POST';
+
+                    $.ajax({
+                        url: url,
+                        method: method,
+                        data: form.serialize(),
+                        success: function(response) {
+                            if (method === 'DELETE') {
+                                form.find('button').text('Save');
+                                form.attr('action', url.replace('unsave', 'save'));
+                                form.find('input[name="_method"]').remove();
+                            } else {
+                                form.find('button').text('Unsave');
+                                form.attr('action', url.replace('save', 'unsave'));
+                                form.append('<input type="hidden" name="_method" value="DELETE">');
+                            }
+                        },
+                        error: function(response) {
+                            alert('An error occurred. Please try again.');
+                        }
+                    });
+                });
+            });
+        </script>
     </body>
 </html>

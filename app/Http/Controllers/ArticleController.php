@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreArticleRequest;
+use Illuminate\Http\Request;
 use App\Models\Article;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -11,20 +12,59 @@ class ArticleController extends Controller
     {
         return view('articles.create');
     }
-
-    public function store(StoreArticleRequest $request)
+//znam che pak ne e po design patterna, no mi pravishe greshka, utre shte go napravq po pravilno
+    public function store(Request $request)
     {
-        $data = $request->validated();
-        $data['author'] = auth()->user()->name;
-        $data['user_id'] = auth()->id();
-        Article::create($data);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255|unique:articles,title',
+            'description' => 'required|string',
+            'content' => 'nullable|string',
+            'url_to_image' => 'nullable|url',
+        ]);
 
-        return redirect('/')->with('success', 'Article created successfully.');
+        $validated['user_id'] = Auth::id();
+
+        Article::create($validated);
+
+        return redirect('/dashboard')->with('success', 'Article created successfully.');
     }
 
-    
     public function show(Article $article)
     {
         return view('articles.show', compact('article'));
     }
+
+    public function edit(Article $article)
+    {
+        if ($article->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('articles.edit', compact('article'));
+    }
+
+    public function update(Request $request, Article $article)
+    {
+        if ($article->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'content' => 'nullable|string',
+            'url_to_image' => 'nullable|url',
+        ]);
+
+        $article->update($validated);
+
+        return redirect('/dashboard')->with('success', 'Article updated successfully.');
+    }
+
+    public function destroy(Article $article)
+    {
+        $article->delete();
+        return redirect('/dashboard')->with('success', 'Article deleted successfully.');
+    }
+    
 }
