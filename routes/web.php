@@ -9,9 +9,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SavedArticleController;
 
 Route::get('/', function (Request $request) {
-    $categoryName = $request->input('category'); 
+    $categoryName = $request->input('category');
+    $searchQuery = $request->input('search');
 
-    if ($categoryName) {
+    if ($searchQuery) {
+        $articles = Article::where('title', 'like', '%' . $searchQuery . '%')->latest()->take(10)->get();
+    } elseif ($categoryName) {
         $category = Category::where('name', $categoryName)->first();
         if ($category) {
             $articles = $category->articles()->latest()->take(10)->get();

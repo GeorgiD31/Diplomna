@@ -108,6 +108,11 @@
             <div>
                 <h1>Latest Articles</h1>
 
+                <form method="GET" action="{{ route('home') }}">
+                    <input type="text" name="search" placeholder="Search articles..." value="{{ request('search') }}" class="px-4 py-2 border rounded-lg mb-4">
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Search</button>
+                </form>
+
                 @if ($articles->count())
                     @foreach ($articles as $article)
                         <div class="article" id="article-{{ $article->id }}">
