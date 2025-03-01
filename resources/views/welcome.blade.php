@@ -100,6 +100,9 @@
                 @foreach(['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'] as $cat)
                     <a href="/?category={{ $cat }}">{{ ucfirst($cat) }}</a>
                 @endforeach
+                @auth
+                    <a href="{{ route('home.preferred') }}" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Preferred Categories</a>
+                @endauth
             </div>
 
             <div>

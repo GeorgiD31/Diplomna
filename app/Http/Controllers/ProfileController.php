@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\Category;
 
 class ProfileController extends Controller
 {
@@ -16,9 +17,9 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = auth()->user();
+        $categories = Category::all();
+        return view('profile.edit', compact('user', 'categories'));
     }
 
     /**
@@ -26,15 +27,23 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $request->validate([
+            'name' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'string', 'email', 'max:255'],
+            'categories' => ['array'],
+        ]);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+        $user = $request->user();
+        $data = $request->only(['name', 'email']);
+        $data['preferences'] = ['categories' => $request->categories];
 
-        $request->user()->save();
+        $data = array_filter($data, function ($value) {
+            return !is_null($value);
+        });
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $user->update($data);
+
+        return redirect()->route('profile.edit')->with('status', 'Profile updated.');
     }
 
     /**

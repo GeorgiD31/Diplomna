@@ -24,6 +24,33 @@
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div class="max-w-xl">
+                    <form method="POST" action="{{ route('profile.update') }}">
+                        @csrf
+                        @method('PATCH')
+
+                        <div>
+                            <x-input-label for="categories" :value="__('Preferred Categories')" />
+                            <div class="grid grid-cols-2 gap-4">
+                                @foreach($categories as $category)
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="categories[]" value="{{ $category->name }}" {{ in_array($category->name, old('categories', $user->preferences['categories'] ?? [])) ? 'checked' : '' }}>
+                                        <span class="ml-2">{{ $category->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end mt-4">
+                            <x-primary-button class="ml-4">
+                                {{ __('Save') }}
+                            </x-primary-button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

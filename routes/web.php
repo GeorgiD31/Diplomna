@@ -25,6 +25,16 @@ Route::get('/', function (Request $request) {
     return view('welcome', compact('articles'));
 })->name('home');
 
+Route::get('/home/preferred', function () {
+    $user = auth()->user();
+    $categoryNames = $user->preferences['categories'] ?? [];
+    $articles = Article::whereHas('categories', function ($query) use ($categoryNames) {
+        $query->whereIn('name', $categoryNames);
+    })->latest()->take(10)->get();
+
+    return view('welcome', compact('articles'));
+})->middleware(['auth', 'verified'])->name('home.preferred');
+
 Route::get('/dashboard', function () {
     $myArticles = Article::where('user_id', auth()->id())->latest()->get();
     return view('dashboard', compact('myArticles'));
