@@ -18,6 +18,13 @@
                     {!! nl2br(e($article->content)) !!}
                 </div>
 
+                @if($biasResult)
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold">Political Bias Classification:</h3>
+                        <p>{{ $biasResult['label'] }} ({{ $biasResult['score'] * 100 }}%)</p>
+                    </div>
+                @endif
+
                 <div class="mt-4">
                     <a href="{{ url()->previous() }}" class="text-blue-500 hover:underline">Back</a>
                 </div>

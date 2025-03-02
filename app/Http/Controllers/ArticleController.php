@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class ArticleController extends Controller
 {
@@ -31,7 +33,22 @@ class ArticleController extends Controller
 
     public function show(Article $article)
     {
-        return view('articles.show', compact('article'));
+        $biasResult = null;
+
+        try {
+            $process = new Process(['python', base_path('classify_political_bias.py'), $article->content]);
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+
+            $biasResult = json_decode($process->getOutput(), true);
+        } catch (\Exception $e) {
+            $biasResult = ['label' => 'Unknown', 'score' => 0];
+        }
+
+        return view('articles.show', compact('article', 'biasResult'));
     }
 
     public function edit(Article $article)
