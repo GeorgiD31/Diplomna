@@ -121,7 +121,11 @@
                                 <img src="{{ $article->url_to_image }}" alt="{{ $article->title }}" style="max-width: 100%; height: auto; margin-bottom: 10px;">
                             @endif
                             <p>{{ $article->description }}</p>
-                            <a href="{{ $article->url }}" target="_blank">Read more</a>
+                            @if($article->user_id)
+                                <a href="{{ route('articles.show', $article->id) }}">Read more</a>
+                            @else
+                                <a href="{{ $article->url }}" target="_blank">Read more</a>
+                            @endif
                             @auth
                                 @if(Auth::user()->savedArticles->contains($article->id))
                                     <form action="{{ route('articles.unsave', $article->id) }}" method="POST" class="save-form" style="display:inline;">
