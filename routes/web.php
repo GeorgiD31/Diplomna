@@ -7,8 +7,11 @@ use App\Models\Category;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SavedArticleController;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', function (Request $request) {
+    Artisan::call('fetch:news');
+
     $categoryName = $request->input('category');
     $searchQuery = $request->input('search');
 
