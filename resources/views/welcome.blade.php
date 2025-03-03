@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>Laravel</title>
 
@@ -179,5 +180,22 @@
                 });
             });
         </script>
+        <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch('/fetch-latest-news', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message); 
+        })
+        .catch(error => console.error('Error fetching news:', error));
+    });
+</script>
+
     </body>
 </html>

@@ -31,6 +31,11 @@ Route::get('/', function (Request $request) {
     return view('welcome', compact('articles'));
 })->name('home');
 
+Route::post('/fetch-latest-news', function () {
+    Artisan::call('fetch:news');
+    return response()->json(['message' => 'News fetched successfully!']);
+}); 
+
 Route::get('/home/preferred', function () {
     $user = auth()->user();
     $categoryNames = $user->preferences['categories'] ?? [];
