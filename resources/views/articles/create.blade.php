@@ -24,6 +24,7 @@
             <div>
                 <label>Author:</label><br>
                 <span>{{ auth()->user()->name }}</span>
+                <input type="hidden" name="author" value="{{ auth()->user()->name }}">
             </div>
             <br>
             
