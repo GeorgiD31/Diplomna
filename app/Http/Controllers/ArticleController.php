@@ -7,6 +7,7 @@ use App\Models\Article;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Carbon\Carbon;
 
 class ArticleController extends Controller
 {
@@ -14,15 +15,23 @@ class ArticleController extends Controller
     {
         return view('articles.create');
     }
-//znam che pak ne e po design patterna, no mi pravishe greshka, utre shte go napravq po pravilno
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255|unique:articles,title',
-            'description' => 'required|string',
-            'content' => 'nullable|string',
-            'url_to_image' => 'nullable|url',
+            'title'        => 'required|string|max:255|unique:articles,title',
+            'author'       => 'nullable|string|max:255',
+            'description'  => 'required|string',
+            'content'      => 'nullable|string',
+            'url'          => 'nullable|url|max:2083',
+            'url_to_image' => 'nullable|url|max:2083',
+            'source_name'  => 'nullable|string|max:255',
+            'published_at' => 'nullable|date',
         ]);
+
+        if (!empty($validated['published_at'])) {
+            $validated['published_at'] = Carbon::parse($validated['published_at'])->format('Y-m-d H:i:s');
+        }
 
         $validated['user_id'] = Auth::id();
 
@@ -71,11 +80,19 @@ class ArticleController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'content' => 'nullable|string',
-            'url_to_image' => 'nullable|url',
+            'title'        => 'required|string|max:255|unique:articles,title,' . $article->id,
+            'author'       => 'nullable|string|max:255',
+            'description'  => 'required|string',
+            'content'      => 'nullable|string',
+            'url'          => 'nullable|url|max:2083',
+            'url_to_image' => 'nullable|url|max:2083',
+            'source_name'  => 'nullable|string|max:255',
+            'published_at' => 'nullable|date',
         ]);
+
+        if (!empty($validated['published_at'])) {
+            $validated['published_at'] = Carbon::parse($validated['published_at'])->format('Y-m-d H:i:s');
+        }
 
         $article->update($validated);
 
@@ -87,5 +104,4 @@ class ArticleController extends Controller
         $article->delete();
         return redirect('/dashboard')->with('success', 'Article deleted successfully.');
     }
-    
 }

@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('author')->nullable();
             $table->text('description')->nullable();
             $table->longText('content')->nullable();
-            $table->string('url')->nullable();
-            $table->string('url_to_image')->nullable();
+            $table->string('url', 2083)->nullable(); 
+            $table->string('url_to_image', 2083)->nullable(); 
             $table->string('source_name')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamp('published_at')->nullable();

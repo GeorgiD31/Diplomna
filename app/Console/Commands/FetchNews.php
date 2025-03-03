@@ -6,12 +6,11 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use App\Models\Article;
 use App\Models\Category;
+use Carbon\Carbon;
 
 class FetchNews extends Command
 {
-    
     protected $signature = 'fetch:news';
-
     protected $description = 'Fetch news from the News API for multiple categories and store them in the database';
 
     public function handle()
@@ -19,7 +18,6 @@ class FetchNews extends Command
         $apiKey = env('NEWS_API_KEY'); 
         $baseUrl = 'https://newsapi.org/v2/top-headlines';
 
-     
         $categories = [
             'business',
             'entertainment',
@@ -35,17 +33,20 @@ class FetchNews extends Command
 
             $response = Http::get($baseUrl, [
                 'apiKey'   => $apiKey,
-                'country'  => 'us',       // za sega kato placeholde posle shte dobavq i drugi
+                'country'  => 'us',
                 'category' => $categoryName,
             ]);
 
             if ($response->successful()) {
                 $articlesData = $response->json()['articles'] ?? [];
 
-    
+                \Log::info("API Response for {$categoryName}:", $articlesData);
+
                 $category = Category::firstOrCreate(['name' => $categoryName]);
 
                 foreach ($articlesData as $newsItem) {
+                    \Log::info("Content for article '{$newsItem['title']}':", ['content' => $newsItem['content']]);
+
                     $article = Article::updateOrCreate(
                         ['title' => $newsItem['title']], 
                         [
@@ -53,10 +54,11 @@ class FetchNews extends Command
                             'description'  => $newsItem['description']  ?? '',
                             'content'      => $newsItem['content']      ?? '',
                             'url'          => $newsItem['url']          ?? '',
-                            'url_to_image' => $newsItem['urlToImage']    ?? '',
+                            'url_to_image' => $newsItem['urlToImage']   ?? '',
                             'source_name'  => $newsItem['source']['name'] ?? '',
-                            'published_at' => $newsItem['publishedAt']   ?? now(),
-                        ]
+                            'published_at' => !empty($newsItem['publishedAt'])
+                            ? Carbon::parse($newsItem['publishedAt'])->format('Y-m-d H:i:s')
+                            : null,]
                     );
 
                     $article->categories()->syncWithoutDetaching([$category->id]);
