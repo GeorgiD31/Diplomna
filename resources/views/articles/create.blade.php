@@ -1,72 +1,117 @@
 <x-app-layout>
-    <div class="container">
-        <h1>Create a New Article</h1>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Create a New Article
+        </h2>
+    </x-slot>
 
-        @if($errors->any())
-            <div style="color: red;">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                @if($errors->any())
+                    <div class="mb-4 text-red-600">
+                        <ul>
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
-        <form action="{{ route('articles.store') }}" method="POST">
-            @csrf
-            
-            <div>
-                <label for="title">Title:</label><br>
-                <input type="text" name="title" id="title" value="{{ old('title') }}" required>
+                <form action="{{ route('articles.store') }}" method="POST">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Title</label>
+                        <input type="text" name="title" value="{{ old('title') }}" class="w-full p-2 border rounded" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Author</label>
+                        <span>{{ auth()->user()->name }}</span>
+                        <input type="hidden" name="author" value="{{ auth()->user()->name }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Description</label>
+                        <textarea name="description" class="w-full p-2 border rounded" required>{{ old('description') }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Content</label>
+                        <textarea name="content" class="w-full p-2 border rounded">{{ old('content') }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">URL</label>
+                        <input type="url" name="url" value="{{ old('url') }}" class="w-full p-2 border rounded">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Image URL</label>
+                        <input type="url" name="url_to_image" value="{{ old('url_to_image') }}" class="w-full p-2 border rounded">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Source Name</label>
+                        <input type="text" name="source_name" value="{{ old('source_name') }}" class="w-full p-2 border rounded">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Published At</label>
+                        <input type="datetime-local" name="published_at" value="{{ old('published_at') }}" class="w-full p-2 border rounded">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Categories</label>
+                        <button type="button" id="toggleCategories" class="p-2 bg-gray-200 rounded">
+                            Select Categories
+                        </button>
+                        <div id="categoriesList" class="hidden mt-2 border p-2 rounded bg-gray-100">
+                            @foreach($categories as $category)
+                                <div>
+                                    <label>
+                                        <input type="checkbox" name="categories[]" value="{{ $category->id }}">
+                                        {{ $category->name }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <button type="button" id="toggleNewCategory" class="p-2 bg-gray-200 rounded">
+                            Add New Category
+                        </button>
+                        <div id="newCategoryField" class="hidden mt-2">
+                            <label for="new_category" class="block text-gray-700">New Category Name</label>
+                            <input type="text" name="new_category" id="new_category" value="{{ old('new_category') }}" class="w-full p-2 border rounded">
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-black rounded">Create Article</button>
+                    </div>
+                </form>
             </div>
-            <br>
-            
-            <div>
-                <label>Author:</label><br>
-                <span>{{ auth()->user()->name }}</span>
-                <input type="hidden" name="author" value="{{ auth()->user()->name }}">
-            </div>
-            <br>
-            
-            <div>
-                <label for="description">Description:</label><br>
-                <textarea name="description" id="description" required>{{ old('description') }}</textarea>
-            </div>
-            <br>
-            
-            <div>
-                <label for="content">Content:</label><br>
-                <textarea name="content" id="content">{{ old('content') }}</textarea>
-            </div>
-            <br>
-            
-            <div>
-                <label for="url">URL:</label><br>
-                <input type="url" name="url" id="url" value="{{ old('url') }}">
-            </div>
-            <br>
-            
-            <div>
-                <label for="url_to_image">Image URL:</label><br>
-                <input type="url" name="url_to_image" id="url_to_image" value="{{ old('url_to_image') }}">
-            </div>
-            <br>
-            
-            <div>
-                <label for="source_name">Source Name:</label><br>
-                <input type="text" name="source_name" id="source_name" value="{{ old('source_name') }}">
-            </div>
-            <br>
-            
-            <div>
-                <label for="published_at">Published At:</label><br>
-                <input type="datetime-local" name="published_at" id="published_at" value="{{ old('published_at') }}">
-            </div>
-            <br>
-            
-            <div>
-                <button type="submit">Create Article</button>
-            </div>
-        </form>
+        </div>
     </div>
+
+    <script>
+        document.getElementById('toggleCategories').addEventListener('click', function() {
+            const categoriesList = document.getElementById('categoriesList');
+            categoriesList.classList.toggle('hidden');
+        });
+
+        document.getElementById('toggleNewCategory').addEventListener('click', function() {
+            const newCategoryField = document.getElementById('newCategoryField');
+            newCategoryField.classList.toggle('hidden');
+        });
+    </script>
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </x-app-layout>

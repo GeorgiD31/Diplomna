@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -13,7 +14,8 @@ class ArticleController extends Controller
 {
     public function create()
     {
-        return view('articles.create');
+        $categories = Category::all();
+        return view('articles.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -27,7 +29,14 @@ class ArticleController extends Controller
             'url_to_image' => 'required|url|max:2083',
             'source_name'  => 'required|string',
             'published_at' => 'required|date',
+            'categories'   => 'array',
+            'categories.*' => 'exists:categories,id',
         ]);
+
+        if ($request->filled('new_category')) {
+            $newCategory = Category::create(['name' => $request->new_category]);
+            $request->merge(['categories' => array_merge($request->categories ?? [], [$newCategory->id])]);
+        }
 
         if (!empty($validated['published_at'])) {
             $validated['published_at'] = Carbon::parse($validated['published_at'])->format('Y-m-d H:i:s');
@@ -35,7 +44,11 @@ class ArticleController extends Controller
 
         $validated['user_id'] = Auth::id();
 
-        Article::create($validated);
+        $article = Article::create($validated);
+
+        if ($request->has('categories')) {
+            $article->categories()->sync($request->categories);
+        }
 
         return redirect('/dashboard')->with('success', 'Article created successfully.');
     }
