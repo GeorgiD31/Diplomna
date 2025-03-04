@@ -45,20 +45,24 @@ class FetchNews extends Command
                 $category = Category::firstOrCreate(['name' => $categoryName]);
 
                 foreach ($articlesData as $newsItem) {
+                    if (empty($newsItem['title']) || empty($newsItem['description']) || empty($newsItem['content']) || empty($newsItem['url']) || empty($newsItem['urlToImage']) || empty($newsItem['source']['name']) || empty($newsItem['publishedAt'])) {
+                        \Log::warning("Skipping article due to missing required fields:", $newsItem);
+                        continue;
+                    }
+
                     \Log::info("Content for article '{$newsItem['title']}':", ['content' => $newsItem['content']]);
 
                     $article = Article::updateOrCreate(
                         ['title' => $newsItem['title']], 
                         [
                             'author'       => $newsItem['author']       ?? 'Unknown',
-                            'description'  => $newsItem['description']  ?? '',
-                            'content'      => $newsItem['content']      ?? '',
-                            'url'          => $newsItem['url']          ?? '',
-                            'url_to_image' => $newsItem['urlToImage']   ?? '',
-                            'source_name'  => $newsItem['source']['name'] ?? '',
-                            'published_at' => !empty($newsItem['publishedAt'])
-                            ? Carbon::parse($newsItem['publishedAt'])->format('Y-m-d H:i:s')
-                            : null,]
+                            'description'  => $newsItem['description'],
+                            'content'      => $newsItem['content'],
+                            'url'          => $newsItem['url'],
+                            'url_to_image' => $newsItem['urlToImage'],
+                            'source_name'  => $newsItem['source']['name'],
+                            'published_at' => Carbon::parse($newsItem['publishedAt'])->format('Y-m-d H:i:s'),
+                        ]
                     );
 
                     $article->categories()->syncWithoutDetaching([$category->id]);

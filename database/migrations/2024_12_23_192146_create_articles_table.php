@@ -15,16 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('title', 255)->unique();
             $table->string('author', 150)->nullable();
-            $table->text('description')->nullable();
-            $table->longText('content')->nullable();
-            $table->string('url', 2083)->nullable(); 
-            $table->string('url_to_image', 2083)->nullable(); 
-            $table->string('source_name', 100)->nullable();
+            $table->text('description');
+            $table->longText('content');
+            $table->string('url', 2083); 
+            $table->string('url_to_image', 2083); 
+            $table->string('source_name');
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->timestamp('published_at')->nullable();
+            $table->timestamp('published_at');
             $table->timestamps();
         });
-        
     }
 
     /**

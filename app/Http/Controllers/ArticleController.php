@@ -22,11 +22,11 @@ class ArticleController extends Controller
             'title'        => 'required|string|max:255|unique:articles,title',
             'author'       => 'nullable|string|max:255',
             'description'  => 'required|string',
-            'content'      => 'nullable|string',
-            'url'          => 'nullable|url|max:2083',
-            'url_to_image' => 'nullable|url|max:2083',
-            'source_name'  => 'nullable|string|max:255',
-            'published_at' => 'nullable|date',
+            'content'      => 'required|string',
+            'url'          => 'required|url|max:2083',
+            'url_to_image' => 'required|url|max:2083',
+            'source_name'  => 'required|string',
+            'published_at' => 'required|date',
         ]);
 
         if (!empty($validated['published_at'])) {
@@ -83,11 +83,11 @@ class ArticleController extends Controller
             'title'        => 'required|string|max:255|unique:articles,title,' . $article->id,
             'author'       => 'nullable|string|max:255',
             'description'  => 'required|string',
-            'content'      => 'nullable|string',
-            'url'          => 'nullable|url|max:2083',
-            'url_to_image' => 'nullable|url|max:2083',
-            'source_name'  => 'nullable|string|max:255',
-            'published_at' => 'nullable|date',
+            'content'      => 'required|string',
+            'url'          => 'required|url|max:2083',
+            'url_to_image' => 'required|url|max:2083',
+            'source_name'  => 'required|string',
+            'published_at' => 'required|date',
         ]);
 
         if (!empty($validated['published_at'])) {
