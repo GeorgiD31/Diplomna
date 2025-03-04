@@ -43,6 +43,8 @@
             }
             .category-links {
                 margin-bottom: 20px;
+                display: flex;
+                flex-wrap: wrap;
             }
             .category-links a {
                 margin-right: 10px;

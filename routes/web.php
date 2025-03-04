@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SavedArticleController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', function (Request $request) {
@@ -14,6 +15,8 @@ Route::get('/', function (Request $request) {
 
     $categoryName = $request->input('category');
     $searchQuery = $request->input('search');
+
+    $categories = Category::with('children')->whereNull('parent_id')->get();
 
     if ($searchQuery) {
         $articles = Article::where('title', 'like', '%' . $searchQuery . '%')->latest()->take(10)->get();
@@ -28,7 +31,7 @@ Route::get('/', function (Request $request) {
         $articles = Article::latest()->take(10)->get();
     }
 
-    return view('welcome', compact('articles'));
+    return view('welcome', compact('articles', 'categories'));
 })->name('home');
 
 Route::post('/fetch-latest-news', function () {
@@ -80,3 +83,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/articles/{article}/save', [SavedArticleController::class, 'store'])->name('articles.save');
     Route::delete('/articles/{article}/unsave', [SavedArticleController::class, 'destroy'])->name('articles.unsave');
 });
+
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
