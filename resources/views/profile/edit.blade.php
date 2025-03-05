@@ -43,6 +43,18 @@
                             </div>
                         </div>
 
+                        <div>
+                            <x-input-label for="sources" :value="__('Preferred Sources')" />
+                            <div class="grid grid-cols-2 gap-4">
+                                @foreach($sources as $source)
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="sources[]" value="{{ $source->id }}" {{ in_array($source->id, old('sources', $user->preferences['sources'] ?? [])) ? 'checked' : '' }}>
+                                        <span class="ml-2">{{ $source->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
                         <div class="flex items-center justify-end mt-4">
                             <x-primary-button class="ml-4">
                                 {{ __('Save') }}

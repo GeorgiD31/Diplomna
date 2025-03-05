@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Models\Category;
+use App\Models\Source;
 
 class ProfileController extends Controller
 {
@@ -19,7 +20,8 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         $categories = Category::all();
-        return view('profile.edit', compact('user', 'categories'));
+        $sources = Source::all();
+        return view('profile.edit', compact('user', 'categories', 'sources'));
     }
 
     /**
@@ -31,11 +33,15 @@ class ProfileController extends Controller
             'name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'categories' => ['array'],
+            'sources' => ['array'],
         ]);
 
         $user = $request->user();
         $data = $request->only(['name', 'email']);
-        $data['preferences'] = ['categories' => $request->categories];
+        $data['preferences'] = [
+            'categories' => $request->categories,
+            'sources' => $request->sources,
+        ];
 
         $data = array_filter($data, function ($value) {
             return !is_null($value);

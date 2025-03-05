@@ -47,11 +47,22 @@ Route::post('/fetch-latest-news', function () {
 Route::get('/home/preferred', function () {
     $user = auth()->user();
     $categoryNames = $user->preferences['categories'] ?? [];
+    $preferredSources = $user->preferences['sources'] ?? [];
+
+    $categories = Category::with('children')->whereNull('parent_id')->get();
+    $sources = Source::all();
+
     $articles = Article::whereHas('categories', function ($query) use ($categoryNames) {
         $query->whereIn('name', $categoryNames);
-    })->latest()->take(10)->get();
+    });
 
-    return view('welcome', compact('articles'));
+    if ($preferredSources) {
+        $articles = $articles->whereIn('source_id', $preferredSources);
+    }
+
+    $articles = $articles->latest()->take(10)->get();
+
+    return view('welcome', compact('articles', 'categories', 'sources'));
 })->middleware(['auth', 'verified'])->name('home.preferred');
 
 Route::get('/dashboard', function () {
