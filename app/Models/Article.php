@@ -41,4 +41,9 @@ class Article extends Model
     {
         return $this->belongsTo(Source::class);
     }
+
+    public function scopeBySource($query, $sourceId)
+    {
+        return $query->where('source_id', $sourceId);
+    }
 }

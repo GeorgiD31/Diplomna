@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Source;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SavedArticleController;
@@ -15,8 +16,10 @@ Route::get('/', function (Request $request) {
 
     $categoryName = $request->input('category');
     $searchQuery = $request->input('search');
+    $sourceId = $request->input('source');
 
     $categories = Category::with('children')->whereNull('parent_id')->get();
+    $sources = Source::all();
 
     if ($searchQuery) {
         $articles = Article::where('title', 'like', '%' . $searchQuery . '%')->latest()->take(10)->get();
@@ -27,11 +30,13 @@ Route::get('/', function (Request $request) {
         } else {
             $articles = Article::latest()->take(10)->get();
         }
+    } elseif ($sourceId) {
+        $articles = Article::where('source_id', $sourceId)->latest()->take(10)->get();
     } else {
         $articles = Article::latest()->take(10)->get();
     }
 
-    return view('welcome', compact('articles', 'categories'));
+    return view('welcome', compact('articles', 'categories', 'sources'));
 })->name('home');
 
 Route::post('/fetch-latest-news', function () {
@@ -86,3 +91,5 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+
+Route::get('/articles/source/{sourceId}', [ArticleController::class, 'filterBySource'])->name('articles.filterBySource');

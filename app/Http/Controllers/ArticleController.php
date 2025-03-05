@@ -117,4 +117,9 @@ class ArticleController extends Controller
         $article->delete();
         return redirect('/dashboard')->with('success', 'Article deleted successfully.');
     }
+
+    public function filterBySource(Request $request, $sourceId) {
+        $articles = Article::bySource($sourceId)->get();
+        return view('articles.index', compact('articles'));
+    }
 }

@@ -116,6 +116,15 @@
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">Search</button>
                 </form>
 
+                <form method="GET" action="{{ route('home') }}">
+                    <select name="source" onchange="this.form.submit()">
+                        <option value="">Select Source</option>
+                        @foreach($sources as $source)
+                            <option value="{{ $source->id }}">{{ $source->name }}</option>
+                        @endforeach
+                    </select>
+                </form>
+
                 @if ($articles->count())
                     @foreach ($articles as $article)
                         <div class="article" id="article-{{ $article->id }}">
