@@ -21,6 +21,8 @@
                 <form action="{{ route('articles.store') }}" method="POST">
                     @csrf
 
+                    <input type="hidden" name="source_id" value="{{ \App\Models\Source::where('name', 'User Generated')->first()->id }}">
+
                     <div class="mb-4">
                         <label class="block text-gray-700">Title</label>
                         <input type="text" name="title" value="{{ old('title') }}" class="w-full p-2 border rounded" required>

@@ -43,6 +43,7 @@ class ArticleController extends Controller
         }
 
         $validated['user_id'] = Auth::id();
+        $validated['source_id'] = $validated['source_id'] ?? Source::where('name', 'User Generated')->first()->id;
 
         $article = Article::create($validated);
 
