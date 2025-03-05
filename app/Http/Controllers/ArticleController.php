@@ -31,7 +31,7 @@ class ArticleController extends Controller
             'published_at' => 'required|date',
             'categories'   => 'array',
             'categories.*' => 'exists:categories,id',
-        ]);
+            'source_id'    => 'required|exists:sources,id',         ]);
 
         if ($request->filled('new_category')) {
             $newCategory = Category::create(['name' => $request->new_category]);

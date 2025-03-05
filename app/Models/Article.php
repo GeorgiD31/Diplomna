@@ -19,6 +19,7 @@ class Article extends Model
         'source_name',
         'published_at',
         'user_id',
+        'source_id',
     ];
 
     public function user()
