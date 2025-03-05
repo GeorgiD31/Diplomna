@@ -36,4 +36,9 @@ class Article extends Model
     {
         return $this->belongsToMany(User::class, 'saved_articles')->withTimestamps();
     }
+
+    public function source()
+    {
+        return $this->belongsTo(Source::class);
+    }
 }

@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Source;
 use Carbon\Carbon;
 
 class FetchNews extends Command
@@ -52,6 +53,8 @@ class FetchNews extends Command
 
                     \Log::info("Content for article '{$newsItem['title']}':", ['content' => $newsItem['content']]);
 
+                    $source = Source::firstOrCreate(['name' => $newsItem['source']['name']]);
+
                     $article = Article::updateOrCreate(
                         ['title' => $newsItem['title']], 
                         [
@@ -62,6 +65,7 @@ class FetchNews extends Command
                             'url_to_image' => $newsItem['urlToImage'],
                             'source_name'  => $newsItem['source']['name'],
                             'published_at' => Carbon::parse($newsItem['publishedAt'])->format('Y-m-d H:i:s'),
+                            'source_id'    => $source->id,
                         ]
                     );
 
