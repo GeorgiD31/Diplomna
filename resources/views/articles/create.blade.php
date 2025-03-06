@@ -21,8 +21,6 @@
                 <form action="{{ route('articles.store') }}" method="POST">
                     @csrf
 
-                    <input type="hidden" name="source_id" value="{{ \App\Models\Source::where('name', 'User Generated')->first()->id }}">
-
                     <div class="mb-4">
                         <label class="block text-gray-700">Title</label>
                         <input type="text" name="title" value="{{ old('title') }}" class="w-full p-2 border rounded" required>
@@ -41,31 +39,44 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700">Content</label>
-                        <textarea name="content" class="w-full p-2 border rounded">{{ old('content') }}</textarea>
+                        <textarea name="content" class="w-full p-2 border rounded" required>{{ old('content') }}</textarea>
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700">URL</label>
-                        <input type="url" name="url" value="{{ old('url') }}" class="w-full p-2 border rounded">
+                        <input type="url" name="url" value="{{ old('url') }}" class="w-full p-2 border rounded" required>
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700">Image URL</label>
-                        <input type="url" name="url_to_image" value="{{ old('url_to_image') }}" class="w-full p-2 border rounded">
+                        <input type="url" name="url_to_image" value="{{ old('url_to_image') }}" class="w-full p-2 border rounded" required>
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700">Source Name</label>
-                        <input type="text" name="source_name" value="{{ old('source_name') }}" class="w-full p-2 border rounded">
+                        <label class="block text-gray-700">Source</label>
+                        <select name="source_id" class="w-full p-2 border rounded">
+                            @foreach($sources as $source)
+                                <option value="{{ $source->id }}">{{ $source->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <button type="button" id="toggleNewSource" class="p-2 bg-gray-200 rounded">
+                            Add New Source
+                        </button>
+                        <div id="newSourceField" class="hidden mt-2">
+                            <label for="new_source" class="block text-gray-700">New Source Name</label>
+                            <input type="text" name="new_source" id="new_source" value="{{ old('new_source') }}" class="w-full p-2 border rounded">
+                        </div>
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700">Published At</label>
-                        <input type="datetime-local" name="published_at" value="{{ old('published_at') }}" class="w-full p-2 border rounded">
+                        <input type="datetime-local" name="published_at" value="{{ old('published_at') }}" class="w-full p-2 border rounded" required>
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700">Categories</label>
                         <button type="button" id="toggleCategories" class="p-2 bg-gray-200 rounded">
                             Select Categories
                         </button>
@@ -108,6 +119,11 @@
         document.getElementById('toggleNewCategory').addEventListener('click', function() {
             const newCategoryField = document.getElementById('newCategoryField');
             newCategoryField.classList.toggle('hidden');
+        });
+
+        document.getElementById('toggleNewSource').addEventListener('click', function() {
+            const newSourceField = document.getElementById('newSourceField');
+            newSourceField.classList.toggle('hidden');
         });
     </script>
 

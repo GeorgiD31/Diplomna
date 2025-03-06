@@ -18,11 +18,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('sources')->insert([
-            'name' => 'User Generated',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+      
     }
 
     /**

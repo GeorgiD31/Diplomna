@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Source;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -15,7 +16,8 @@ class ArticleController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('articles.create', compact('categories'));
+        $sources = Source::all();
+        return view('articles.create', compact('categories', 'sources'));
     }
 
     public function store(Request $request)
@@ -27,11 +29,20 @@ class ArticleController extends Controller
             'content'      => 'required|string',
             'url'          => 'required|url|max:2083',
             'url_to_image' => 'required|url|max:2083',
-            'source_name'  => 'required|string',
+            'source_id'    => 'nullable|exists:sources,id',
             'published_at' => 'required|date',
             'categories'   => 'array',
             'categories.*' => 'exists:categories,id',
-            'source_id'    => 'required|exists:sources,id',         ]);
+        ]);
+
+        if ($request->filled('new_source')) {
+            $newSource = Source::create(['name' => $request->new_source]);
+            $validated['source_id'] = $newSource->id;
+            $validated['source_name'] = $newSource->name;
+        } else {
+            $source = Source::find($validated['source_id']);
+            $validated['source_name'] = $source->name;
+        }
 
         if ($request->filled('new_category')) {
             $newCategory = Category::create(['name' => $request->new_category]);
@@ -43,7 +54,6 @@ class ArticleController extends Controller
         }
 
         $validated['user_id'] = Auth::id();
-        $validated['source_id'] = $validated['source_id'] ?? Source::where('name', 'User Generated')->first()->id;
 
         $article = Article::create($validated);
 
