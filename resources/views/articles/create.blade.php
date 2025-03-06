@@ -81,14 +81,12 @@
                             Select Categories
                         </button>
                         <div id="categoriesList" class="hidden mt-2 border p-2 rounded bg-gray-100">
-                            @foreach($categories as $category)
-                                <div>
-                                    <label>
-                                        <input type="checkbox" name="categories[]" value="{{ $category->id }}">
-                                        {{ $category->name }}
-                                    </label>
-                                </div>
-                            @endforeach
+                            <label for="categories" class="block text-gray-700">Categories</label>
+                            <select name="categories[]" id="categories" multiple class="w-full p-2 border rounded">
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 

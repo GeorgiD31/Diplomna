@@ -34,12 +34,14 @@
                         <div>
                             <x-input-label for="categories" :value="__('Preferred Categories')" />
                             <div class="grid grid-cols-2 gap-4">
-                                @foreach($categories as $category)
-                                    <label class="flex items-center">
-                                        <input type="checkbox" name="categories[]" value="{{ $category->name }}" {{ in_array($category->name, old('categories', $user->preferences['categories'] ?? [])) ? 'checked' : '' }}>
-                                        <span class="ml-2">{{ $category->name }}</span>
-                                    </label>
-                                @endforeach
+                                <label for="categories" class="block text-gray-700">Categories</label>
+                                <select name="categories[]" id="categories" multiple class="w-full p-2 border rounded">
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->name }}" {{ in_array($category->name, old('categories', $user->preferences['categories'] ?? [])) ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 
