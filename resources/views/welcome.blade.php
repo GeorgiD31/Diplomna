@@ -1,86 +1,14 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+<x-app-layout>
+    <div class="w-full px-4 py-8">
 
-    <title>Laravel</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-    <style>
-        body {
-            font-family: 'Figtree', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9fafb;
-            color: #111827;
-        }
-        .page-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .category-links {
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        .category-links a {
-            text-decoration: none;
-            color: #2563eb;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-        .category-links a:hover {
-            color: #1e40af;
-        }
-        .article {
-            border-bottom: 1px solid #e5e7eb;
-            padding: 10px 0;
-        }
-        .article h2 {
-            font-size: 1.25rem;
-            margin: 0;
-        }
-        .article p {
-            margin: 5px 0;
-            color: #6b7280;
-        }
-        .article a, .article button {
-            text-decoration: none;
-            color: #2563eb;
-            font-weight: bold;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            transition: color 0.3s;
-        }
-        .article a:hover, .article button:hover {
-            color: #1e40af;
-        }
-    </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-
-    @include('layouts.navigation')
-
-    <div class="page-container">
-        <div class="category-links">
+        <div class="category-links flex flex-wrap justify-center items-center gap-2 mb-4">
             @foreach(['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'] as $cat)
-                <a href="/?category={{ $cat }}">{{ ucfirst($cat) }}</a>
+                <a href="/?category={{ $cat }}" class="text-blue-600 font-bold hover:text-blue-800">
+                    {{ ucfirst($cat) }}
+                </a>
             @endforeach
             @auth
-                <a href="{{ route('home.preferred') }}" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
+                <a href="{{ route('home.preferred') }}" class="px-4 py-2 bg-green-500 text-black rounded hover:bg-green-700">
                     Preferred Categories
                 </a>
             @endauth
@@ -88,7 +16,7 @@
 
         <form method="GET" action="{{ route('home') }}" class="flex flex-wrap justify-center items-center gap-4 mb-8">
             <input type="text" name="search" placeholder="Search articles..." value="{{ request('search') }}" class="px-4 py-2 border rounded-lg">
-            
+
             <select name="source" onchange="this.form.submit()" class="px-4 py-2 border rounded-lg">
                 <option value="">Select Source</option>
                 @foreach($sources as $source)
@@ -97,49 +25,56 @@
                     </option>
                 @endforeach
             </select>
-
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-                Search
-            </button>
         </form>
 
         @if ($articles->count())
-            @foreach ($articles as $article)
-                <div class="article" id="article-{{ $article->id }}">
-                    <h2>{{ $article->title }}</h2>
-                    @if($article->url_to_image)
-                        <img src="{{ $article->url_to_image }}" alt="{{ $article->title }}" style="max-width: 100%; height: auto; margin-bottom: 10px;">
-                    @endif
-                    <p>{{ $article->description }}</p>
-                    @if($article->user_id)
-                        <a href="{{ route('articles.show', $article->id) }}">Read more</a>
-                    @else
-                        <a href="{{ $article->url }}" target="_blank">Read more</a>
-                    @endif
-                    @auth
-                        @if(Auth::user()->savedArticles->contains($article->id))
-                            <form action="{{ route('articles.unsave', $article->id) }}" method="POST" class="save-form" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit">Unsave</button>
-                            </form>
-                        @else
-                            <form action="{{ route('articles.save', $article->id) }}" method="POST" class="save-form" style="display:inline;">
-                                @csrf
-                                <button type="submit">Save</button>
-                            </form>
-                        @endif
-                    @endauth
-                </div>
-            @endforeach
+            <div class="w-[55%] mx-auto flex flex-col gap-8">
+                @foreach ($articles as $article)
+                    <div class="border-b border-gray-200 pb-8">
+                        <h2 class="text-xl font-semibold text-center">{{ $article->title }}</h2>
+                        @if($article->url_to_image)
+    <div class="my-4 flex justify-center">
+        <img src="{{ $article->url_to_image }}" 
+             alt="{{ $article->title }}" 
+             style="width: 100%; max-width: 1000px; height: auto; object-fit: cover; border-radius: 0.5rem;">
+    </div>
+@endif
+
+                        <p class="text-gray-600 text-center">{{ $article->description }}</p>
+                        <div class="flex justify-center gap-4 mt-4">
+                            @if($article->user_id)
+                                <a href="{{ route('articles.show', $article->id) }}" class="text-blue-500 font-bold hover:underline">Read more</a>
+                            @else
+                                <a href="{{ $article->url }}" target="_blank" class="text-blue-500 font-bold hover:underline">Read more</a>
+                            @endif
+                            @auth
+                                @if(Auth::user()->savedArticles->contains($article->id))
+                                    <form action="{{ route('articles.unsave', $article->id) }}" method="POST" class="save-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 font-bold">Unsave</button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('articles.save', $article->id) }}" method="POST" class="save-form">
+                                        @csrf
+                                        <button type="submit" class="text-green-500 font-bold">Save</button>
+                                    </form>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         @else
-            <p class="text-center">No articles available.</p>
+            <p class="text-center text-gray-500">No articles available.</p>
         @endif
+
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('.save-form').on('submit', function(e) {
+        document.addEventListener("DOMContentLoaded", function() {
+            $(document).on('submit', '.save-form', function(e) {
                 e.preventDefault();
 
                 var form = $(this);
@@ -152,11 +87,11 @@
                     data: form.serialize(),
                     success: function(response) {
                         if (method === 'DELETE') {
-                            form.find('button').text('Save');
+                            form.find('button').text('Save').removeClass('text-red-500').addClass('text-green-500');
                             form.attr('action', url.replace('unsave', 'save'));
                             form.find('input[name="_method"]').remove();
                         } else {
-                            form.find('button').text('Unsave');
+                            form.find('button').text('Unsave').removeClass('text-green-500').addClass('text-red-500');
                             form.attr('action', url.replace('save', 'unsave'));
                             form.append('<input type="hidden" name="_method" value="DELETE">');
                         }
@@ -184,6 +119,4 @@
             .catch(error => console.error('Error fetching news:', error));
         });
     </script>
-
-</body>
-</html>
+</x-app-layout>
