@@ -94,7 +94,10 @@ class ArticleController extends Controller
             abort(403);
         }
 
-        return view('articles.edit', compact('article'));
+        $sources = Source::all();
+        $categories = Category::all();
+
+        return view('articles.edit', compact('article', 'sources', 'categories'));
     }
 
     public function update(Request $request, Article $article)
