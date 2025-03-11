@@ -14,10 +14,10 @@
             @endauth
         </div>
 
-        <form method="GET" action="{{ route('home') }}" class="flex flex-wrap justify-center items-center gap-4 mb-8">
-            <input type="text" name="search" placeholder="Search articles..." value="{{ request('search') }}" class="px-4 py-2 border rounded-lg">
+        <form method="GET" action="{{ route('home') }}" class="flex justify-center items-center gap-4 mb-8 w-full max-w-[600px] mx-auto">
+            <input type="text" name="search" placeholder="Search articles..." value="{{ request('search') }}" class="px-4 py-2 border rounded-lg w-[400px] h-[44px]">
 
-            <select name="source" onchange="this.form.submit()" class="px-4 py-2 border rounded-lg">
+            <select name="source" id="source-select" class="px-4 py-2 border rounded-lg w-[400px] h-[44px]">
                 <option value="">Select Source</option>
                 @foreach($sources as $source)
                     <option value="{{ $source->id }}" {{ request('source') == $source->id ? 'selected' : '' }}>
@@ -33,12 +33,12 @@
                     <div class="border-b border-gray-200 pb-8">
                         <h2 class="text-xl font-semibold text-center">{{ $article->title }}</h2>
                         @if($article->url_to_image)
-    <div class="my-4 flex justify-center">
-        <img src="{{ $article->url_to_image }}" 
-             alt="{{ $article->title }}" 
-             style="width: 100%; max-width: 1000px; height: auto; object-fit: cover; border-radius: 0.5rem;">
-    </div>
-@endif
+                            <div class="my-4 flex justify-center">
+                                <img src="{{ $article->url_to_image }}" 
+                                     alt="{{ $article->title }}" 
+                                     style="width: 100%; max-width: 1000px; height: auto; object-fit: cover; border-radius: 0.5rem;">
+                            </div>
+                        @endif
 
                         <p class="text-gray-600 text-center">{{ $article->description }}</p>
                         <div class="flex justify-center gap-4 mt-4">
@@ -72,6 +72,18 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+    <style>
+        .choices__inner {
+            width: 400px !important; 
+            height: 44px !important; 
+            display: flex;
+            align-items: center;
+        }
+    </style>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             $(document).on('submit', '.save-form', function(e) {
@@ -101,22 +113,17 @@
                     }
                 });
             });
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            fetch('/fetch-latest-news', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message); 
-            })
-            .catch(error => console.error('Error fetching news:', error));
+
+            const sourceSelect = new Choices('#source-select', {
+                searchEnabled: true,
+                shouldSort: false,
+                allowHTML: true,
+                itemSelectText: '',
+            });
+
+            document.getElementById('source-select').addEventListener('change', function() {
+                this.form.submit();
+            });
         });
     </script>
 </x-app-layout>
