@@ -38,8 +38,8 @@
                             <label for="categories" class="block text-gray-700 dark:text-gray-300">Preferred Categories</label>
                             <select name="categories[]" id="categories" multiple class="w-full p-2 border rounded">
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ in_array($category->id, old('categories', $user->preferences['categories'] ?? [])) ? 'selected' : '' }}>
-                                        {{ $category->name }}
+                                <option value="{{ $category->name }}" {{ in_array($category->name, old('categories', $user->preferences['categories'] ?? [])) ? 'selected' : '' }}>
+                                {{ $category->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -79,7 +79,6 @@
                 itemSelectText: '',
             });
 
-            // Multi Select for Sources
             new Choices('#sources', {
                 removeItemButton: true,
                 searchEnabled: true,
