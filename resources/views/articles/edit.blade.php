@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
 
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
@@ -45,21 +48,18 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-gray-700">Source</label>
-                        <select name="source_id" class="w-full p-2 border rounded">
-                            @foreach($sources as $source)
-                                <option value="{{ $source->id }}" {{ $article->source_id == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <button type="button" id="toggleNewSource" class="p-2 bg-gray-200 rounded">
-                            Add New Source
+                        <button type="button" id="toggleSources" class="p-2 bg-gray-200 rounded">
+                            Select Source
                         </button>
-                        <div id="newSourceField" class="hidden mt-2">
-                            <label for="new_source" class="block text-gray-700">New Source Name</label>
-                            <input type="text" name="new_source" id="new_source" value="{{ old('new_source') }}" class="w-full p-2 border rounded">
+                        <div id="sourcesList" class="hidden mt-2">
+                            <label class="block text-gray-700">Source</label>
+                            <div class="control">
+                                <select name="source_id" id="choices-single-source" class="form-control">
+                                    @foreach($sources as $source)
+                                        <option value="{{ $source->id }}" {{ $article->source_id == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -71,9 +71,21 @@
                             <label for="categories" class="block text-gray-700">Categories</label>
                             <select name="categories[]" id="categories" multiple class="w-full p-2 border rounded">
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ in_array($category->id, $article->categories->pluck('id')->toArray()) ? 'selected' : '' }}>{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ in_array($category->id, old('categories', $article->categories->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <button type="button" id="toggleNewSource" class="p-2 bg-gray-200 rounded">
+                            Add New Source
+                        </button>
+                        <div id="newSourceField" class="hidden mt-2">
+                            <label for="new_source" class="block text-gray-700">New Source Name</label>
+                            <input type="text" name="new_source" id="new_source" value="{{ old('new_source') }}" class="w-full p-2 border rounded">
                         </div>
                     </div>
 
@@ -95,25 +107,66 @@
     </div>
 
     <script>
-        document.getElementById('toggleCategories').addEventListener('click', function() {
-            const categoriesList = document.getElementById('categoriesList');
-            categoriesList.classList.toggle('hidden');
+        document.getElementById('toggleSources').addEventListener('click', function() {
+            document.getElementById('sourcesList').classList.toggle('hidden');
         });
 
-        document.getElementById('toggleNewCategory').addEventListener('click', function() {
-            const newCategoryField = document.getElementById('newCategoryField');
-            newCategoryField.classList.toggle('hidden');
+        document.getElementById('toggleCategories').addEventListener('click', function() {
+            document.getElementById('categoriesList').classList.toggle('hidden');
         });
 
         document.getElementById('toggleNewSource').addEventListener('click', function() {
-            const newSourceField = document.getElementById('newSourceField');
-            newSourceField.classList.toggle('hidden');
+            document.getElementById('newSourceField').classList.toggle('hidden');
+        });
+
+        document.getElementById('toggleNewCategory').addEventListener('click', function() {
+            document.getElementById('newCategoryField').classList.toggle('hidden');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            new Choices('#choices-single-source', {
+                searchEnabled: true,
+                shouldSort: false,
+                allowHTML: true,
+                itemSelectText: '',
+            });
+
+            new Choices('#categories', {
+                removeItemButton: true,
+                searchEnabled: true,
+                placeholderValue: 'Select categories...',
+                searchFloor: 1,
+                shouldSort: false,
+                allowHTML: true,
+                itemSelectText: '',
+            });
         });
     </script>
 
     <style>
         .hidden {
             display: none;
+        }
+        .choices {
+            width: 100%;
+            max-width: 500px;
+        }
+        .choices__inner {
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .choices__list--dropdown {
+            max-height: 350px;
+            overflow-y: auto;
+            border-radius: 8px;
+            background: white;
+        }
+        .choices__list--multiple .choices__item {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin: 2px;
         }
     </style>
 </x-app-layout>
