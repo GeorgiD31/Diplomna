@@ -1,9 +1,16 @@
 <x-app-layout>
     <div class="w-full px-4 py-8">
+        @if (session('status'))
+            <div class="mb-4 text-center text-green-500">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        <div id="message" class="mb-4 text-center text-green-500 hidden"></div>
 
         <div class="category-links flex flex-wrap justify-center items-center gap-2 mb-4">
             @foreach(['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'] as $cat)
-                <a href="/?category={{ $cat }}" class="text-blue-600 font-bold hover:text-blue-800">
+                <a href="/?category={{ $cat }}" class="text-blue-600 font-bold hover:text-blue-800 {{ request('category') == $cat ? 'underline' : '' }}">
                     {{ ucfirst($cat) }}
                 </a>
             @endforeach
@@ -41,7 +48,7 @@
                         @endif
 
                         <p class="text-gray-600 text-center">{{ $article->description }}</p>
-                        <div class="flex justify-center gap-4 mt-4">
+                        <div class="flex flex-col items-center gap-2 mt-4">
                             @if($article->user_id)
                                 <a href="{{ route('articles.show', $article->id) }}" class="text-blue-500 font-bold hover:underline">Read more</a>
                             @else
@@ -49,14 +56,16 @@
                             @endif
                             @auth
                                 @if(Auth::user()->savedArticles->contains($article->id))
-                                    <form action="{{ route('articles.unsave', $article->id) }}" method="POST" class="save-form">
+                                    <form action="{{ route('articles.unsave', $article->id) }}" method="POST" class="save-form flex flex-col items-center">
                                         @csrf
                                         @method('DELETE')
+                                        <span class="message hidden" style="color: red;"></span>
                                         <button type="submit" class="text-red-500 font-bold">Unsave</button>
                                     </form>
                                 @else
-                                    <form action="{{ route('articles.save', $article->id) }}" method="POST" class="save-form">
+                                    <form action="{{ route('articles.save', $article->id) }}" method="POST" class="save-form flex flex-col items-center">
                                         @csrf
+                                        <span class="message hidden" style="color: green;"></span>
                                         <button type="submit" class="text-green-500 font-bold">Save</button>
                                     </form>
                                 @endif
@@ -116,10 +125,12 @@
                             form.find('button').text('Save').removeClass('text-red-500').addClass('text-green-500');
                             form.attr('action', url.replace('unsave', 'save'));
                             form.find('input[name="_method"]').remove();
+                            showMessage(form, 'Article unsaved successfully.', 'red');
                         } else {
                             form.find('button').text('Unsave').removeClass('text-green-500').addClass('text-red-500');
                             form.attr('action', url.replace('save', 'unsave'));
                             form.append('<input type="hidden" name="_method" value="DELETE">');
+                            showMessage(form, 'Article saved successfully.', 'green');
                         }
                     },
                     error: function(response) {
@@ -165,6 +176,16 @@
                 $('#register-modal').addClass('hidden');
                 $('#login-modal').removeClass('hidden');
             });
+
+            function showMessage(form, message, color) {
+                const messageSpan = form.find('.message');
+                messageSpan.stop(true, true).text(message).removeClass('hidden').css('color', color).show();
+                setTimeout(() => {
+                    messageSpan.fadeOut(() => {
+                        messageSpan.addClass('hidden').text('');
+                    });
+                }, 3000);
+            }
         });
     </script>
 </x-app-layout>
