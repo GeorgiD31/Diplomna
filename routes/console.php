@@ -6,5 +6,5 @@ use Illuminate\Console\Scheduling\Schedule;
 
 
 app()->resolving(Schedule::class, function (Schedule $schedule) {
-    $schedule->command('fetch:news')->hourly();
+    $schedule->command('fetch:news')->everyMinute();
 });

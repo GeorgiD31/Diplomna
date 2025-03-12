@@ -12,7 +12,7 @@ use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', function (Request $request) {
-    Artisan::call('fetch:news');
+    // Artisan::call('fetch:news');
 
     $categoryName = $request->input('category');
     $searchQuery = $request->input('search');
