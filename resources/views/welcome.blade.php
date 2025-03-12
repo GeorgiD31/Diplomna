@@ -71,6 +71,20 @@
 
     </div>
 
+    <div id="login-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <button id="close-login-modal" class="absolute top-2 right-2 text-gray-600">&times;</button>
+            @include('auth.login')
+        </div>
+    </div>
+
+    <div id="register-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <button id="close-register-modal" class="absolute top-2 right-2 text-gray-600">&times;</button>
+            @include('auth.register')
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
@@ -123,6 +137,33 @@
 
             document.getElementById('source-select').addEventListener('change', function() {
                 this.form.submit();
+            });
+
+            $('#open-login-modal').on('click', function() {
+                $('#login-modal').removeClass('hidden');
+            });
+
+            $('#close-login-modal').on('click', function() {
+                $('#login-modal').addClass('hidden');
+            });
+
+            $('#open-register-modal').on('click', function() {
+                $('#register-modal').removeClass('hidden');
+            });
+
+            $('#close-register-modal').on('click', function() {
+                $('#register-modal').addClass('hidden');
+            });
+
+            $('a[href="{{ route('register') }}"]').on('click', function(e) {
+                e.preventDefault();
+                $('#register-modal').removeClass('hidden');
+            });
+
+            $(document).on('click', 'a[href="{{ route('login') }}"]', function(e) {
+                e.preventDefault();
+                $('#register-modal').addClass('hidden');
+                $('#login-modal').removeClass('hidden');
             });
         });
     </script>
