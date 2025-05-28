@@ -12,9 +12,28 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
 
+                {{-- Show validation errors and success messages --}}
+                @if ($errors->any())
+                    <div class="mb-4 text-red-600">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if (session('success'))
+                    <div class="mb-4 text-green-600">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 <form action="{{ route('articles.update', $article->id) }}" method="POST">
                     @csrf
                     @method('PUT')
+
+                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
 
                     <div class="mb-4">
                         <label class="block text-gray-700">Title</label>
@@ -53,13 +72,13 @@
                         </button>
                         <div id="sourcesList" class="hidden mt-2">
                             <label class="block text-gray-700">Source</label>
-                            <div class="control">
-                                <select name="source_id" id="choices-single-source" class="form-control">
-                                    @foreach($sources as $source)
-                                        <option value="{{ $source->id }}" {{ $article->source_id == $source->id ? 'selected' : '' }}>{{ $source->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <select name="source_id" id="choices-single-source" class="form-control w-full">
+                                @foreach($sources as $source)
+                                    <option value="{{ $source->id }}" {{ $article->source_id == $source->id ? 'selected' : '' }}>
+                                        {{ $source->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -98,6 +117,8 @@
                             <input type="text" name="new_category" id="new_category" value="{{ old('new_category') }}" class="w-full p-2 border rounded">
                         </div>
                     </div>
+                    <input type="hidden" name="source_name" value="{{ $article->source_name }}">
+                    <input type="hidden" name="published_at" value="{{ $article->published_at }}">
 
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-black rounded">Save Changes</button>
                 </form>
@@ -145,22 +166,28 @@
 
     <style>
         .hidden {
-            display: none;
+            visibility: hidden;
+            position: absolute;
+            pointer-events: none;
         }
+
         .choices {
             width: 100%;
             max-width: 500px;
         }
+
         .choices__inner {
             border-radius: 8px;
             padding: 10px;
         }
+
         .choices__list--dropdown {
             max-height: 350px;
             overflow-y: auto;
             border-radius: 8px;
             background: white;
         }
+
         .choices__list--multiple .choices__item {
             background-color: #3b82f6;
             color: white;

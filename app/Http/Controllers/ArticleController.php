@@ -64,29 +64,27 @@ class ArticleController extends Controller
         return redirect('/dashboard')->with('success', 'Article created successfully.');
     }
 
-    public function show(Article $article)
-    {
-        if ($article->user_id) {
-            $biasResult = null;
+   public function show(Article $article)
+{
+    if ($article->user_id) {
+        $biasResult = null;
 
-            try {
-                $process = new Process(['python', base_path('classify_political_bias.py'), $article->content]);
-                $process->run();
+        try {
+            $response = \Illuminate\Support\Facades\Http::post('http://localhost:8000/classify', [
+                'text' => $article->content,
+            ]);
 
-                if (!$process->isSuccessful()) {
-                    throw new ProcessFailedException($process);
-                }
-
-                $biasResult = json_decode($process->getOutput(), true);
-            } catch (\Exception $e) {
-                $biasResult = ['label' => 'Unknown', 'score' => 0];
-            }
-
-            return view('articles.show', compact('article', 'biasResult'));
-        } else {
-            return redirect()->away($article->url);
+            $biasResult = $response->json();
+        } catch (\Exception $e) {
+            $biasResult = ['label' => 'Unknown', 'score' => 0];
         }
+
+        return view('articles.show', compact('article', 'biasResult'));
+    } else {
+        return redirect()->away($article->url);
     }
+}
+
 
     public function edit(Article $article)
     {
