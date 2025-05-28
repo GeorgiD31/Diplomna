@@ -22,8 +22,8 @@
         </div>
 
         <form method="GET" action="{{ route('home') }}" class="flex justify-center items-center gap-4 mb-8 w-full max-w-[600px] mx-auto">
-            <input type="text" name="search" placeholder="Search articles..." value="{{ request('search') }}" class="px-4 py-2 border rounded-lg w-[400px] h-[44px]">
-
+            <input type="text" type="submit" name="search" placeholder="Search articles..." value="{{ request('search') }}" class="px-4 py-2 border rounded-lg w-[400px] h-[44px]">
+<button type="submit" style="display: none;">Search</button>
             <select name="source" id="source-select" class="px-4 py-2 border rounded-lg w-[400px] h-[44px]">
                 <option value="">Select Source</option>
                 @foreach($sources as $source)
@@ -32,6 +32,8 @@
                     </option>
                 @endforeach
             </select>
+
+</button>
         </form>
 
         @if ($articles->count())
@@ -76,7 +78,7 @@
             </div>
 
             <div class="mt-4 flex justify-center">
-                {{ $articles->links() }}
+{{ $articles->appends(request()->query())->links() }}
             </div>
         @else
             <p class="text-center text-gray-500">No articles available.</p>
