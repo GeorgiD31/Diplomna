@@ -74,6 +74,10 @@
                     </div>
                 @endforeach
             </div>
+
+            <div class="mt-4 flex justify-center">
+                {{ $articles->links() }}
+            </div>
         @else
             <p class="text-center text-gray-500">No articles available.</p>
         @endif

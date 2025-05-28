@@ -136,7 +136,7 @@ return [
         |--------------------------------------------------------------------------
         */
 
-       App\Providers\SchedulerServiceProvider::class, // ✅ Ensures the fetch command runs automatically
+       App\Providers\SchedulerServiceProvider::class, 
     ],
 
 ];

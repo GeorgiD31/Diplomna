@@ -136,4 +136,10 @@ class ArticleController extends Controller
         $articles = Article::bySource($sourceId)->get();
         return view('articles.index', compact('articles'));
     }
+    public function index()
+{
+    $articles = Article::orderBy('published_at', 'desc')->paginate(10);
+    return view('welcome', compact('articles'));
+}
+
 }

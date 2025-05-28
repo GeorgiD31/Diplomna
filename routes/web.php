@@ -22,18 +22,18 @@ Route::get('/', function (Request $request) {
     $sources = Source::all();
 
     if ($searchQuery) {
-        $articles = Article::where('title', 'like', '%' . $searchQuery . '%')->orderBy('published_at', 'desc')->take(10)->get();
+        $articles = Article::where('title', 'like', '%' . $searchQuery . '%')->orderBy('published_at', 'desc')->paginate(10);
     } elseif ($categoryName) {
         $category = Category::where('name', $categoryName)->first();
         if ($category) {
-            $articles = $category->articles()->orderBy('published_at', 'desc')->take(10)->get();
+            $articles = $category->articles()->orderBy('published_at', 'desc')->paginate(10);
         } else {
-            $articles = Article::orderBy('published_at', 'desc')->take(10)->get();
+            $articles = Article::orderBy('published_at', 'desc')->paginate(10);
         }
     } elseif ($sourceId) {
-        $articles = Article::where('source_id', $sourceId)->orderBy('published_at', 'desc')->take(10)->get();
+        $articles = Article::where('source_id', $sourceId)->orderBy('published_at', 'desc')->paginate(10);
     } else {
-        $articles = Article::orderBy('published_at', 'desc')->take(10)->get();
+        $articles = Article::orderBy('published_at', 'desc')->paginate(10);
     }
 
     return view('welcome', compact('articles', 'categories', 'sources'));
@@ -60,7 +60,7 @@ Route::get('/home/preferred', function () {
         $articles = $articles->whereIn('source_id', $preferredSources);
     }
 
-    $articles = $articles->orderBy('published_at', 'desc')->take(10)->get();
+    $articles = $articles->orderBy('published_at', 'desc')->paginate(10);
 
     return view('welcome', compact('articles', 'categories', 'sources'));
 })->middleware(['auth', 'verified'])->name('home.preferred');
